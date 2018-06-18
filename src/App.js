@@ -5,7 +5,11 @@ import './App.css';
 const Test = () => <div>Testing</div>
 const Title = ({ text }) => <div>{text}</div>
 
-class App extends Component {
+export class App extends Component {
+  state = {
+    on: false
+  }
+
   render() {
     return (
       <div className="App">
@@ -20,9 +24,19 @@ class App extends Component {
         <ul></ul>
         <ul></ul>
         <ul></ul>
+        <p className="button-state">{this.state.on ? "Yes!" : "No!"}</p>
+        <button onClick={() => this.setState({ on: true})}>Click</button>
       </div>
     );
   }
 }
 
-export default App;
+//export default App;
+
+export class Link extends Component {
+  render() {
+    return (this.props.hide ? null :
+      <a href={this.props.address}>Click</a>)
+    
+  }
+}
