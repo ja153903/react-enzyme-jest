@@ -7,7 +7,27 @@ const Title = ({ text }) => <div>{text}</div>
 
 export class App extends Component {
   state = {
-    on: false
+    on: false,
+    input: '',
+    mainColor: 'blue',
+    lifeCycle: '',
+    hide: false
+  }
+
+  componentDidMount() {
+    this.setState({
+      lifeCycle: 'componentDidMount'
+    })
+  }
+
+  componentWillReceiveProps() {
+    this.setState({
+      lifeCycle: 'componentWillReceiveProps'
+    })
+  }
+
+  handleStrings(str) {
+    return str === "Hello World" ? true : false;
   }
 
   render() {
@@ -16,6 +36,7 @@ export class App extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Welcome to React</h1>
+          <h3 className={this.state.mainColor}>Everyone is welcome!</h3>
         </header>
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
@@ -26,6 +47,10 @@ export class App extends Component {
         <ul></ul>
         <p className="button-state">{this.state.on ? "Yes!" : "No!"}</p>
         <button onClick={() => this.setState({ on: true})}>Click</button>
+        <h2>{ this.state.input }</h2>
+        <input type="text" 
+        onChange={(e) => this.setState({ input: e.target.value })}/>
+        <p className="lifeCycle">{this.state.lifeCycle}</p>
       </div>
     );
   }

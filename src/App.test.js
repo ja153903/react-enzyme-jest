@@ -21,14 +21,14 @@ describe('<App /> shallow rendering', () => {
     })
     expect(wrapper.find("p").exists()).toBe(true)
     expect(wrapper.find("ul").length).toBe(3)
-    expect(wrapper.find("p").length).toBe(2)
+    expect(wrapper.find("p").length).toBe(3)
     expect(wrapper.find('[text="jaime"]').text()).toBe("<Title />")
     expect(wrapper.find({text: "jaime"}).exists()).toBe(true)
   })
 
   it('matches the snapshot', () => {
     const tree = shallow(<App />)
-    expect(tree).toMatchSnapshot()
+    expect(toJson(tree)).toMatchSnapshot()
   })
 
   it('on button click changes p text', () => {
@@ -38,9 +38,52 @@ describe('<App /> shallow rendering', () => {
     button.simulate('click') // targets prop based on the event
     expect(wrapper.find('.button-state').text()).toBe("Yes!")
   })
+
+  it('on input change, title changes text', () => {
+    const wrapper = shallow(<App />)
+    const input = wrapper.find('input')
+    expect(wrapper.find('h2').text()).toBe('')
+    input.simulate('change', {target: {value: 'Tyler'}})
+    expect(wrapper.find('h2').text()).toBe('Tyler')
+  })
+
+  it('updates className with new state', () => {
+    const wrapper = shallow(<App />)
+    expect(wrapper.find('.blue').length).toBe(1)
+    expect(wrapper.find('.red').length).toBe(0)
+
+    wrapper.setState({ mainColor: 'red' });
+
+    expect(wrapper.find('.blue').length).toBe(0)
+    expect(wrapper.find('.red').length).toBe(1)
+  })
+
+  it('calls componentDidMount', () => {
+    // mocks out the lifecycle to be called
+    jest.spyOn(App.prototype, 'componentDidMount')
+    const wrapper = shallow(<App />)
+    expect(App.prototype.componentDidMount.mock.calls.length).toBe(1)
+    expect(wrapper.find('.lifeCycle').text()).toBe('componentDidMount')
+  })
+
+  it('setProps calls componentWillReceiveProps', () => {
+    jest.spyOn(App.prototype, "componentWillReceiveProps")
+    const wrapper = shallow(<App />)
+    wrapper.setProps({ hide: true })
+    expect(App.prototype.componentWillReceiveProps.mock.calls.length).toBe(1)
+    expect(wrapper.find('.lifeCycle').text()).toBe('componentWillReceiveProps')
+  })
+
+  it('handlesStrings function returns correctly', () => {
+    const wrapper = shallow(<App />)
+    const trueReturn = wrapper.instance().handleStrings("Hello World")
+    const falseReturn = wrapper.instance().handleStrings("")
+    expect(trueReturn).toBe(true)
+    expect(falseReturn).toBe(false)
+  })
 })
 
-// you want to import js-dom installed to test the whole DOM
+// // you want to import js-dom installed to test the whole DOM
 
 describe('<App /> mount rendering', () => {
   it('h1 contains the correct text', () => {
@@ -59,7 +102,7 @@ describe('<App /> mount rendering', () => {
 
   it('matches the snapshot', () => {
     const tree = mount(<App />)
-    expect(tree).toMatchSnapshot()
+    expect(toJson(tree)).toMatchSnapshot()
     tree.unmount();
   })
 })
